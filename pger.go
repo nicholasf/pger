@@ -53,8 +53,8 @@ func main() {
 
 	sqls := loadMigrations(infos)
 
-	for _, sqlFile := range sqls {
-		cmdArgs := commandString(*psql, *host, *database, *user, *dir, sqlFile.filename)
+	for _, migration := range sqls {
+		cmdArgs := commandString(*host, *database, *user, *dir, migration.filename)
 
 		handlePassword := false
 
@@ -76,7 +76,7 @@ func main() {
 		}
 
 		fmt.Println(string(out))
-		fmt.Printf("Migrated %s.\n", sqlFile.filename)
+		fmt.Printf("Migrated %s.\n", migration.filename)
 	}
 }
 
@@ -103,8 +103,8 @@ type migration struct {
 	number, filename string
 }
 
-func commandString(psql, host, database, user, workingDirectory, filename string) []string {
+func commandString(host, database, user, workingDirectory, filename string) []string {
 	var cmdStr []string
-	cmdStr = []string{"-h", host, "-d", database, "-f", (fmt.Sprintf("%s/%s", workingDirectory, filename))}
+	cmdStr = []string{"-h", host, "-d", database, "-U", user, "-f", (fmt.Sprintf("%s/%s", workingDirectory, filename))}
 	return cmdStr
 }
